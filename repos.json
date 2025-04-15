@@ -2,7 +2,7 @@
     "kernelSource": {
       "name": "Lineage21",
       "repo": "https://android.googlesource.com/kernel/configs/",
-      "branch": "android-gs-bluejay-5.10-android14-qpr3-beta",
+      "branch": "android-gs-bluejay-android16-beta-3",
       "device": "bluejay"
     },
     "withKernelSU": true,
