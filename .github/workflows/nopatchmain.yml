@@ -1,39 +1,3 @@
-<<<<<<< HEAD
-[  {
-    "kernelSource": {
-      "name": "Lineage21",
-      "repo": "https://android.googlesource.com/kernel/configs/",
-      "branch": "android-gs-bluejay-5.10-android14-qpr3-beta",
-      "device": "bluejay"
-    },
-    "withKernelSU": true,
-    "toolchains": [
-      {
-        "repo": "https://android.googlesource.com/platform/prebuilts/gas/linux-x86",
-        "branch": "master",
-        "name": "gas"
-      },
-      {
-        "repo": "https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone/",
-        "branch": "11",
-        "name": "clang"
-      }
-    ],
-    "params": {
-      "ARCH": "arm64",
-      "CROSS_COMPILE": "aarch64-linux-gnu-",
-      "CROSS_COMPILE_ARM32": "arm-linux-gnueabi-",
-      "CROSS_COMPILE_COMPAT": "arm-linux-gnueabi-",
-      "CLANG_TRIPLE": "aarch64-linux-gnu-",
-      "AR": "",
-      "CC": "clang"
-    },
-    "extraParams": {
-      "KEEP": ""
-    }
-  }
-]
-=======
 name: Build Kernel for Nethunter
 
 on:
@@ -64,16 +28,6 @@ jobs:
           echo "$GITHUB_WORKSPACE/toolchains/clang/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/toolchains/gas/bin" >> $GITHUB_PATH
 
-      - name: Configure KernelSU
-        if: ${{ github.event.inputs.variant == 'Lineage21' }}
-        run: |
-          echo "Applying KernelSU patches or configuration..."
-          # Example steps to configure KernelSU
-          git clone --depth=1 https://github.com/tiann/KernelSU.git KernelSU
-          cd KernelSU
-          ./patch.sh ../
-          cd ..
-
       - name: Build kernel
         run: |
           echo "Building kernel for ${{ github.event.inputs.variant }}"
@@ -96,4 +50,3 @@ jobs:
         with:
           name: kernel-${{ github.event.inputs.variant }}
           path: out/arch/arm64/boot/Image
->>>>>>> 30b82786e6a1f5f6fb21751f1fffeaf1a5ebecad

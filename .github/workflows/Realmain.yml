@@ -1,56 +1,34 @@
-<<<<<<< HEAD
-[  {
-    "kernelSource": {
-      "name": "Lineage21",
-      "repo": "https://android.googlesource.com/kernel/configs/",
-      "branch": "android-gs-bluejay-5.10-android14-qpr3-beta",
-      "device": "bluejay"
-    },
-    "withKernelSU": true,
-    "toolchains": [
-      {
-        "repo": "https://android.googlesource.com/platform/prebuilts/gas/linux-x86",
-        "branch": "master",
-        "name": "gas"
-      },
-      {
-        "repo": "https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone/",
-        "branch": "11",
-        "name": "clang"
-      }
-    ],
-    "params": {
-      "ARCH": "arm64",
-      "CROSS_COMPILE": "aarch64-linux-gnu-",
-      "CROSS_COMPILE_ARM32": "arm-linux-gnueabi-",
-      "CROSS_COMPILE_COMPAT": "arm-linux-gnueabi-",
-      "CLANG_TRIPLE": "aarch64-linux-gnu-",
-      "AR": "",
-      "CC": "clang"
-    },
-    "extraParams": {
-      "KEEP": ""
-    }
-  }
-]
-=======
-name: Build Kernel for Nethunter
+name: Build Kernel
 
 on:
   workflow_dispatch:
     inputs:
       variant:
-        description: 'Kernel variant to build'
+        description: 'Select build variant'
         required: true
-        default: 'Lineage21'
+        default: 'DogDayAndroid'
+        type: choice
+        options:
+          - DogDayAndroid
+          - DogDay-KernelSU
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout kernel source
+        uses: actions/checkout@v4
+        with:
+          repository: DogDayAndroid/android_kernel_xiaomi_thyme
+          ref: lineage-20.0
+
+      - name: Set up toolchains
+        run: |
+          # Clone GAS toolchain
+          git clone --depth=1 https://android.googlesource.com/platform/prebuilts/gas/linux-x86 toolchains/gas
+          # Clone Clang toolchain
+          git clone --depth=1 -b 11 https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone.git toolchains/clang
 
       - name: Set environment variables
         run: |
@@ -64,15 +42,15 @@ jobs:
           echo "$GITHUB_WORKSPACE/toolchains/clang/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/toolchains/gas/bin" >> $GITHUB_PATH
 
-      - name: Configure KernelSU
-        if: ${{ github.event.inputs.variant == 'Lineage21' }}
+      - name: Configure KernelSU (if selected)
+        if: ${{ github.event.inputs.variant == 'DogDay-KernelSU' }}
         run: |
           echo "Applying KernelSU patches or configuration..."
-          # Example steps to configure KernelSU
-          git clone --depth=1 https://github.com/tiann/KernelSU.git KernelSU
-          cd KernelSU
-          ./patch.sh ../
-          cd ..
+          # Example: git clone KernelSU repo and apply patches
+          # git clone --depth=1 https://github.com/tiann/KernelSU.git KernelSU
+          # cd KernelSU
+          # ./patch.sh ../
+          # cd ..
 
       - name: Build kernel
         run: |
@@ -81,7 +59,7 @@ jobs:
           make O=out clean
           make O=out mrproper
           # Configure defconfig (replace with your actual defconfig)
-          make O=out ARCH=arm64 bluejay_defconfig # Replace bluejay_defconfig with your actual defconfig
+          make O=out ARCH=arm64 ${{ github.event.inputs.variant == 'DogDay-KernelSU' && 'kernelsu_defconfig' || 'vendor/thyme_defconfig' }}
           # Build the kernel
           make -j$(nproc) O=out \
             ARCH=arm64 \
@@ -96,4 +74,4 @@ jobs:
         with:
           name: kernel-${{ github.event.inputs.variant }}
           path: out/arch/arm64/boot/Image
->>>>>>> 30b82786e6a1f5f6fb21751f1fffeaf1a5ebecad
+          
