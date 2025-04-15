@@ -1,62 +1,77 @@
+name: Build Kernel
 
-  {
-    "kernelSource": {
-      "name": "DogDayAndroid",
-      "repo": "https://codeberg.org/DogDayAndroid/android_kernel_xiaomi_thyme",
-      "branch": "lineage-20.0",
-      "device": "thyme"
-    },
-    "withKernelSU": false,
-    "toolchains": [
-      {
-        "repo": "https://android.googlesource.com/platform/prebuilts/gas/linux-x86",
-        "branch": "master",
-        "name": "gas"
-      },
-      {
-        "repo": "https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone/",
-        "branch": "11",
-        "name": "clang"
-      }
-    ],
-    "params": {
-      "ARCH": "arm64",
-      "CROSS_COMPILE": "aarch64-linux-gnu-",
-      "CROSS_COMPILE_ARM32": "arm-linux-gnueabi-",
-      "CROSS_COMPILE_COMPAT": "arm-linux-gnueabi-",
-      "CLANG_TRIPLE": "aarch64-linux-gnu-",
-      "AR": "",
-      "CC": "clang"
-    }
-  },
-  {
-    "kernelSource": {
-      "name": "DogDay-KernelSU",
-      "repo": "https://codeberg.org/DogDayAndroid/android_kernel_xiaomi_thyme",
-      "branch": "lineage-20.0",
-      "device": "thyme"
-    },
-    "withKernelSU": true,
-    "toolchains": [
-      {
-        "repo": "https://android.googlesource.com/platform/prebuilts/gas/linux-x86",
-        "branch": "master",
-        "name": "gas"
-      },
-      {
-        "repo": "https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone/",
-        "branch": "11",
-        "name": "clang"
-      }
-    ],
-    "params": {
-      "ARCH": "arm64",
-      "CROSS_COMPILE": "aarch64-linux-gnu-",
-      "CROSS_COMPILE_ARM32": "arm-linux-gnueabi-",
-      "CROSS_COMPILE_COMPAT": "arm-linux-gnueabi-",
-      "CLANG_TRIPLE": "aarch64-linux-gnu-",
-      "AR": "",
-      "CC": "clang"
-    }
-  }
-]
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: 'Select build variant'
+        required: true
+        default: 'DogDayAndroid'
+        type: choice
+        options:
+          - DogDayAndroid
+          - DogDay-KernelSU
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout kernel source
+        uses: actions/checkout@v4
+        with:
+          repository: DogDayAndroid/android_kernel_xiaomi_thyme
+          ref: lineage-20.0
+
+      - name: Set up toolchains
+        run: |
+          # Clone GAS toolchain
+          git clone --depth=1 https://android.googlesource.com/platform/prebuilts/gas/linux-x86 toolchains/gas
+          # Clone Clang toolchain
+          git clone --depth=1 -b 11 https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone.git toolchains/clang
+
+      - name: Set environment variables
+        run: |
+          echo "ARCH=arm64" >> $GITHUB_ENV
+          echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
+          echo "CROSS_COMPILE_ARM32=arm-linux-gnueabi-" >> $GITHUB_ENV
+          echo "CROSS_COMPILE_COMPAT=arm-linux-gnueabi-" >> $GITHUB_ENV
+          echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
+          echo "CC=clang" >> $GITHUB_ENV
+          # Add toolchain paths to PATH
+          echo "$GITHUB_WORKSPACE/toolchains/clang/bin" >> $GITHUB_PATH
+          echo "$GITHUB_WORKSPACE/toolchains/gas/bin" >> $GITHUB_PATH
+
+      - name: Configure KernelSU (if selected)
+        if: ${{ github.event.inputs.variant == 'DogDay-KernelSU' }}
+        run: |
+          echo "Applying KernelSU patches or configuration..."
+          # Example: git clone KernelSU repo and apply patches
+          # git clone --depth=1 https://github.com/tiann/KernelSU.git KernelSU
+          # cd KernelSU
+          # ./patch.sh ../
+          # cd ..
+
+      - name: Build kernel
+        run: |
+          echo "Building kernel for ${{ github.event.inputs.variant }}"
+          # Clean previous builds
+          make O=out clean
+          make O=out mrproper
+          # Configure defconfig (replace with your actual defconfig)
+          make O=out ARCH=arm64 ${{ github.event.inputs.variant == 'DogDay-KernelSU' && 'kernelsu_defconfig' || 'vendor/thyme_defconfig' }}
+          # Build the kernel
+          make -j$(nproc) O=out \
+            ARCH=arm64 \
+            CC=clang \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+            CROSS_COMPILE_COMPAT=arm-linux-gnueabi- \
+            CLANG_TRIPLE=aarch64-linux-gnu-
+
+      - name: Upload kernel image
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-${{ github.event.inputs.variant }}
+          path: out/arch/arm64/boot/Image
+          
