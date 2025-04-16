@@ -6,10 +6,10 @@
     "device": "bluejay"} },
   
   { "kernelSource": { 
+    "name": "Google"
     "repo": "https://android.googlesource.com/kernel/common/",
-    "branch": "
-    "name": "Dummy", 
-    "device": "test" } }
+    "branch": "android-gs-bluejay-android16-beta-3",
+    "device": "bluejay" } }
 ]
   },
   "withKernelSU": true,
