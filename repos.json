@@ -14,8 +14,8 @@
     "device": "bluejay" 
   } 
 }
-]
-  },
+
+] },
   "withKernelSU": true,
   "toolchains": [
     {
