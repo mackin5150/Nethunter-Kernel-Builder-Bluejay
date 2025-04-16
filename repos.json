@@ -3,7 +3,14 @@
     "name": "Lineage21",
     "repo": "https://android.googlesource.com/kernel/configs/",
     "branch": "android-gs-bluejay-5.10-android14-qpr3-beta",
-    "device": "bluejay"
+    "device": "bluejay"} },
+  
+  { "kernelSource": { 
+    "repo": "https://android.googlesource.com/kernel/common/",
+    "branch": "
+    "name": "Dummy", 
+    "device": "test" } }
+]
   },
   "withKernelSU": true,
   "toolchains": [
