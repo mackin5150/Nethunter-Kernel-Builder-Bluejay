@@ -42,7 +42,7 @@ jobs:
       kernelBranch: ${{ matrix.repos.kernelSource.branch }}
       kernelDevice: ${{ matrix.repos.kernelSource.device }}
 
-      DEFCONFIG: vendor/${{ matrix.repos.kernelSource.device }}defconfig
+      DEFCONFIG: (arch/arm64/configs/defconfig)
 
       withKernelSU: ${{ matrix.repos.withKernelSU }}
     steps:
@@ -80,7 +80,19 @@ jobs:
 
       - name: "😎 Set args"
         id: generate-args
-        working-directory: ./${{ env.kernelDir }}
+        working-directory: ./${{ env.ker- name: "😋 Update KernelSU"                                                       working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
+        if: ${{ env.withKernelSU == 'true' }}
+        run: |
+          if [ -d "./KernelSU" ]; then                                                       rm -rf "./KernelSU"                                                            fi
+          if [ -d "./drivers/kernelsu" ]; then
+            rm -rf "./drivers/kernelsu"                                                    fi
+                                                                                           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel
+/setup.sh" | bash -s main                                                                                                                                                   echo -e "\nCONFIG_KPROBES=y" >> ./arch/${{ env.ARCH }}/configs/${{ env.
+DEFCONFIG }}                                                                               echo -e "\nCONFIG_HAVE_KPROBES=y" >> ./arch/${{ env.ARCH }}/configs/${{
+ env.DEFCONFIG }}                                                                          echo -e "\nCONFIG_KPROBE_EVENTS=y" >> ./arch/${{ env.ARCH }}/configs/${
+{ env.DEFCONFIG }}
+
+          cat ./arch/${{ env.ARCH }}/configs/${{ env.DEFCONFIG }}nelDir }}
         env:
           params: "${{ toJSON(matrix.repos.params) }}"
           extraParams: "${{ toJSON(matrix.repos.extraParams) }}"
