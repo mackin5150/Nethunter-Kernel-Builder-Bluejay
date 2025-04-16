@@ -6,7 +6,7 @@
     "device": "bluejay"} },
   
   { "kernelSource": { 
-    "name": "Google"
+    "name": "Google",
     "repo": "https://android.googlesource.com/kernel/common/",
     "branch": "android-gs-bluejay-android16-beta-3",
     "device": "bluejay" } }
