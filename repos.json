@@ -6,7 +6,6 @@
       "branch": "android-gs-bluejay-5.10-android14-qpr3-beta",
       "device": "bluejay"
     },
-    "withKernelSU": false,
     "toolchains": [
       {
         "repo": "https://android.googlesource.com/platform/prebuilts/gas/linux-x86",
