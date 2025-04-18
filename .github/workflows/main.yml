@@ -85,15 +85,14 @@ jobs:
         run: mkdir -p ./Google_bluejay/out
 
       - name: "🏴‍☠️ Before Action "
-        env:
-            args:
         working-directory: ./${{ env.kernelDir }}/${{ env.OUT_DIR }}
         run: |
           echo "CONFIG_OF_CONFIGFS=y" >> .config
           echo "CONFIG_OF_OVERLAY=y" >> .config
 
       - name: "Create .config"
-        run: make  -j$(nproc)
+        working-directory: ./${{ env.kernelDir }}/${{ env.OUT_DIR }}
+        run: make .config
 
       - name: "🏴‍☠️ Post Action "
         run: |
