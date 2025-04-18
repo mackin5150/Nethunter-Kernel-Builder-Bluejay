@@ -83,10 +83,9 @@ jobs:
 
       - name: "🏴‍☠️ Before Action "
         env:
-            args: ${{ steps.generate-args.outputs.args }}
+            args:
         working-directory: ./${{ env.kernelDir }}/${{ env.OUT_DIR }}
         run: |
-          echo "args ---> ${args}"
           echo "current path ---> $(pwd)"
           echo "CONFIG_OF_CONFIGFS=y" >> .config
           echo "CONFIG_OF_OVERLAY=y" >> .config
