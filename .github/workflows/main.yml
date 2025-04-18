@@ -89,7 +89,7 @@ jobs:
           echo "current path ---> $(pwd)"
           echo "CONFIG_OF_CONFIGFS=y" >> .config
           echo "CONFIG_OF_OVERLAY=y" >> .config
-          cat .config
+          make -j(nproc)
 
       - name: "🎶 Build kernel"
         working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
