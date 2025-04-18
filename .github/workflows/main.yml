@@ -86,7 +86,6 @@ jobs:
             args:
         working-directory: ./${{ env.kernelDir }}/${{ env.OUT_DIR }}
         run: |
-          echo "current path ---> $(pwd)"
           echo "CONFIG_OF_CONFIGFS=y" >> .config
           echo "CONFIG_OF_OVERLAY=y" >> .config
           make -j(nproc)
