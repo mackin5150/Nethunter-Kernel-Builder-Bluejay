@@ -91,15 +91,7 @@ jobs:
         run: |
           echo "CONFIG_OF_CONFIGFS=y" >> .config
           echo "CONFIG_OF_OVERLAY=y" >> .config
-          make -j(nproc)
-
-      - name: "🎶 Build kernel"
-        working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
-        env:
-          args: ${{ steps.generate-args.outputs.args }}
-        run: |
-          echo "PATH Variable: $PATH"
-          make ${args}
+          make -j$(nproc))
 
       - name: "🏴‍☠️ Post Action "
         run: |
