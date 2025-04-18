@@ -81,6 +81,9 @@ jobs:
         working-directory: ./${{ env.kernelDir }}/${{ env.kernelName }}
         run: make defconfig
 
+      - name: "Create output directory"
+        run: mkdir -p ./Google_bluejay/out
+
       - name: "🏴‍☠️ Before Action "
         env:
             args:
