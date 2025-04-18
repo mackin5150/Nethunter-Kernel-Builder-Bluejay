@@ -88,12 +88,15 @@ jobs:
         working-directory: ./${{ env.kernelDir }}/${{ env.OUT_DIR }}
         run: |
           echo "CONFIG_OF_CONFIGFS=y" >> .config
+        run: |
           echo "CONFIG_OF_OVERLAY=y" >> .config
+        run: |
+          echo "CONFIG_CFG80211=y" >> .config
 
       - name: "Create .config"
         working-directory: ./${{ env.kernelDir }}/${{ env.OUT_DIR }}
-        run: make .config
-
+        run: |
+          make -j14
       - name: "🏴‍☠️ Post Action "
         run: |
           # make ${args} dtbs
