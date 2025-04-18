@@ -91,7 +91,9 @@ jobs:
         run: |
           echo "CONFIG_OF_CONFIGFS=y" >> .config
           echo "CONFIG_OF_OVERLAY=y" >> .config
-          make -j$(nproc)
+
+      - name: "Create .config"
+        run: make .config -j$(nproc)
 
       - name: "🏴‍☠️ Post Action "
         run: |
