@@ -96,7 +96,7 @@ jobs:
       - name: "Create .config"
         working-directory: ./${{ env.kernelDir }}/${{ env.OUT_DIR }}
         run: |
-          make -j14
+          make install -j14
       - name: "🏴‍☠️ Post Action "
         run: |
           # make ${args} dtbs
